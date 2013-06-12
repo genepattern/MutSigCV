@@ -1,3 +1,4 @@
+#Wed, 12 Jun 2013 14:33:42 -0400
 #MutSigCV
 #Mon May 20 10:11:58 EDT 2013
 JVMLevel=
@@ -55,4 +56,4 @@ requiredPatchURLs=http\://www.broadinstitute.org/webservices/gpModuleRepository/
 serializedModel=
 taskType=MutSig
 userid=eby
-version=Initial version for testing
+version=Initial version for testing and documentation.  There are known updates coming but these are still in the works.
