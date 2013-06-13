@@ -4,10 +4,11 @@
 JVMLevel=
 LSID=urn\:lsid\:broad.mit.edu\:cancer.software.genepattern.module.analysis\:00320\:0.1
 author=Mike Lawrence, et al.;Broad Institute
-commandLine=<dotkit.init> -u Matlab-2009b <python_2.6> <libdir>run_matlab.py <libdir> MutSigCV <mutation.table.file> <coverage.table.file> <covariates.table.file> <output.filename>
+commandLine=<dotkit.init> -u Matlab-2009b <python_2.6> <libdir>run_matlab.py <libdir> MutSigCV <use.flanking> <mutation.table.file> <coverage.table.file> <covariates.table.file> <output.filename>
 license=license.txt
+taskDoc=doc.html
 cpuType=any
-description=Mutation Significance with Covariates
+description=Identify genes that are mutated more often than expected by chance.
 fileFormat=txt
 language=MATLAB
 name=MutSigCV
@@ -48,6 +49,12 @@ p4_name=output.filename
 p4_optional=
 p4_type=java.lang.String
 p4_value=
+p5_default_value=--useflanking
+p5_description=Use flanking regions?
+p5_name=<use.flanking>
+p5_optional=
+p5_type=java.lang.String
+p5_value=--useflanking\=use flanking;--ignoreflanking\=ignore flanking
 pipelineModel=
 privacy=private
 quality=development
