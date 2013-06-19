@@ -6,7 +6,7 @@
 	<target name="create-zip" depends="init">
 		<antcall target="prezip" />
 		<zip destfile="${dest.dir}/${ant.project.name}.zip" whenempty="fail" defaultexcludes="true">
-            <fileset dir="." includes="manifest, *.pdf, *.txt"/>
+            <fileset dir="." includes="manifest, *.html, *.txt"/>
             <fileset dir="src" includes="run_matlab.py" />
             <fileset dir="executables" />
 		</zip>
