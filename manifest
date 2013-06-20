@@ -4,7 +4,7 @@
 JVMLevel=
 LSID=urn\:lsid\:broad.mit.edu\:cancer.software.genepattern.module.analysis\:00320\:0.1
 author=Mike Lawrence, et al.;Broad Institute
-commandLine=<dotkit.init> -u .matlab-2013a <python_2.6> <libdir>run_matlab.py <libdir> MutSigCV <mutation.table.file> <coverage.table.file> <covariates.table.file> <output.filename> <mutation.type.dictionary> <genome.build>
+commandLine=<dotkit.init> -u .matlab-2013a <python_2.6> <libdir>run_matlab.py <libdir> MutSigCV <mutation.table.file> <coverage.table.file> <covariates.table.file> <output.filename.base> <mutation.type.dictionary> <genome.build>
 license=license.txt
 taskDoc=doc.html
 cpuType=any
