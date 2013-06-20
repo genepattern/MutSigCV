@@ -13,6 +13,7 @@ fileFormat=txt
 language=MATLAB
 name=MutSigCV
 os=Linux
+minGenePatternVersion=3.4.2
 p1_MODE=IN
 p1_TYPE=FILE
 p1_default_value=
@@ -64,9 +65,13 @@ p6_value=\=Skip category and effect discovery;<shared.data.home>/cga/annotation/
 pipelineModel=
 privacy=private
 quality=development
-requiredPatchLSIDs=urn\:lsid\:broadinstitute.org\:plugin\:Ant_1.8\:1,urn\:lsid\:broadinstitute.org\:plugin\:Check_Python_2.6\:2
-requiredPatchURLs=http\://www.broadinstitute.org/webservices/gpModuleRepository/download/prod/patch/?file\=/Ant_1_8/broadinstitute.org\:plugin/Ant_1.8/1/Ant_1_8.zip,http\://www.broadinstitute.org/webservices/gpModuleRepository/download/prod/patch/?file\=/Check_Python_2.6/broadinstitute.org\:plugin/Check_Python_2.6/2/Check_Python_2_6.zip
+requiredPatchLSIDs=urn\:lsid\:broad.mit.edu\:cancer.software.genepattern.server.patch\:GenePattern_3_4_2\:2,\
+   urn\:lsid\:broadinstitute.org\:plugin\:Ant_1.8\:1,\
+   urn\:lsid\:broadinstitute.org\:plugin\:Check_Python_2.6\:2
+requiredPatchURLs==http\://www.broadinstitute.org/webservices/gpModuleRepository/download/prod/patch/?file=/GenePattern_3_4_2/broad.mit.edu\:cancer.software.genepattern.server.patch/GenePattern_3_4_2/2/GenePattern_3_4_2.zip,\
+   http\://www.broadinstitute.org/webservices/gpModuleRepository/download/prod/patch/?file\=/Ant_1_8/broadinstitute.org\:plugin/Ant_1.8/1/Ant_1_8.zip,\
+   http\://www.broadinstitute.org/webservices/gpModuleRepository/download/prod/patch/?file\=/Check_Python_2.6/broadinstitute.org\:plugin/Check_Python_2.6/2/Check_Python_2_6.zip
 serializedModel=
 taskType=MutSig
 userid=eby
-version=Initial version for testing and documentation.  There are known updates coming but these are still in the works.
+version=Updated for MutSigCV v1.3.01, adding features for automatic category discovery and assume full coverage.  Updated param descriptions.  Added GP version check.
