@@ -179,14 +179,14 @@ function MutSigCV(mutation_file,coverage_file,covariate_file,output_filestem,var
   % (1) PREPROCESS
   fprintf('\n\n');
   fprintf('MutSigCV: PREPROCESS\n');
-  fprintf('--------------------\n\n');
+  fprintf('--------------------\n');
 
   MutSig_preprocess(mutation_file,coverage_file,covariate_file,output_filestem,varargin{:})
 
   % (2) RUN
   fprintf('\n\n');
   fprintf('MutSigCV: RUN\n');
-  fprintf('-------------\n\n');
+  fprintf('-------------\n');
 
   mutation_file = [output_filestem '.mutations.txt'];
   coverage_file = [output_filestem '.coverage.txt'];
@@ -267,25 +267,52 @@ function MutSig_preprocess(mutation_file,coverage_file,covariate_file,output_fil
   
   fprintf('Processing mutation "effect"...\n');
   
-  if ~isfield(M,'Variant_Classification') && isfield(M,'type')
-    M.Variant_Classification = M.type;
+  if isfield(M,'effect') && (isfield(M,'is_coding') || isfield(M,'is_silent'))
+    fprintf('NOTE:  Both "effect" and "is_coding"/"is_silent" are present in mutation_file.  Using "effect".\n');
   end
-  if ~isfield(M,'Variant_Classification')
-    error('mutation_file is missing Variant_Classification');
+  if isfield(M,'effect')
+    fprintf('Will use the pre-existing "effect" column.\n');
+    M.effect = regexprep(M.effect,'^flank.*','noncoding');
+    if any(~ismember(unique(M.effect),{'noncoding','silent','nonsilent','null'}))
+      error('in mutation_file, "effect" must be one of noncoding/silent/nonsilent/null.');
+    end
+  elseif isfield(M,'is_coding') && isfield(M,'is_silent')
+    fprintf('Will use the pre-existing "is_coding" and "is_silent" columns.\n');
+    M = make_numeric(M,{'is_coding','is_silent'});
+    if all((M.is_coding==0 | M.is_coding==1) & (M.is_silent==0 | M.is_silent==1))
+      % OK
+    else
+      error('in mutation_file, all values of "is_coding" and "is_silent" must be either 0 or 1');
+    end
+    if any(M.is_coding==0 & M.is_silent==1)
+      error('in mutation_file, if is_coding==0, then is_silent must be 1');
+    end
+    M.effect = repmat({'noncoding'},slength(M),1);
+    idx=find(M.is_coding==1 & M.is_silent==1); M.effect(idx) = repmat({'silent'},length(idx),1);
+    idx=find(M.is_coding==1 & M.is_silent==0); M.effect(idx) = repmat({'nonsilent'},length(idx),1);
+  else
+    % try to calculate EFFECT column from Variant Classification/Type
+    if ~isfield(M,'Variant_Classification') && isfield(M,'type')
+      M.Variant_Classification = M.type;
+    end
+    if ~isfield(M,'Variant_Classification')
+      error('mutation_file is missing Variant_Classification');
+    end
+    if isempty(mutation_type_dictionary_file) || ~exist(mutation_type_dictionary_file,'file')
+      error('missing mutation_type_dictionary_file');
+    end
+    dict = load_struct(mutation_type_dictionary_file);
+    require_fields(dict,{'Variant_Classification','effect'});
+    M.effect = mapacross(upper(M.Variant_Classification),upper(dict.Variant_Classification),dict.effect,'unknown');
+    bad = find(strcmp('unknown',M.effect));
+    if length(bad)>0
+      fprintf('WARNING:  %d/%d mutations could not be mapped to effect using mutation_type_dictionary_file:\n',length(bad),slength(M));
+      count(M.Variant_Classification(bad),1);
+      fprintf('          They will be removed from the analysis.\n');
+      M = reorder_struct_exclude(M,bad);
+    end
+    if slength(M)==0, error('No mutations left!'); end
   end
-  if isempty(mutation_type_dictionary_file) || ~exist(mutation_type_dictionary_file,'file')
-    error('missing mutation_type_dictionary_file');
-  end
-  dict = load_struct(mutation_type_dictionary_file);
-  require_fields(dict,{'Variant_Classification','effect'});
-  M.effect = mapacross(M.Variant_Classification,dict.Variant_Classification,dict.effect,'unknown');
-  bad = find(strcmp('unknown',M.effect));
-  if length(bad)>0
-    fprintf('WARNING:  %d mutations could not be mapped to effect using mutation_type_dictionary_file.\n',length(bad));
-    fprintf('          They will be removed from the analysis.\n');
-    M = reorder_struct_exclude(M,bad);
-  end
-  if slength(M)==0, error('No mutations left!'); end
 
   %%%%%%%%%%%%
   % CATEG    %
@@ -336,7 +363,7 @@ function MutSig_preprocess(mutation_file,coverage_file,covariate_file,output_fil
     M = make_numeric(M,'start');
     bad = find(isnan(M.start));
     if length(bad)>0
-      fprintf('WARNING:  %d mutations had non-numeric Start_position.  Excluding them from analysis.\n',length(bad));
+      fprintf('WARNING:  %d/%d mutations had non-numeric Start_position.  Excluding them from analysis.\n',length(bad),slength(M));
       M = reorder_struct_exclude(M,bad);
     end
     if slength(M)==0, error('No mutations left!\n'); end
@@ -357,7 +384,7 @@ function MutSig_preprocess(mutation_file,coverage_file,covariate_file,output_fil
         % remove mutations on weird chromosomes
         bad = find(~chr_file_available(M.chr_idx));
         if length(bad)>0
-          fprintf('WARNING:  %d mutations are on chromosomes not found in chr_files_directory.  Excluding them from analysis.\n',length(bad));
+          fprintf('WARNING:  %d/%d mutations are on chromosomes not found in chr_files_directory.  Excluding them from analysis.\n',length(bad),slength(M));
           M = reorder_struct_exclude(M,bad);
         end
         if slength(M)==0, error('No mutations left!\n'); end
@@ -368,12 +395,12 @@ function MutSig_preprocess(mutation_file,coverage_file,covariate_file,output_fil
   % DECIDE WHAT TO DO ABOUT CATEGORIES
   % METHODS:   1. use the existing categories
   %            2. have only one category for non-nulls
-  %            3. discovery k categories for non-nulls
+  %            3. discover k categories for non-nulls
   
   if categ_flag==0
     % requested use of categories already present
     if ~categs_already_present
-      error('when setting categ_flag==0, "categ" column must be present in mutation_file.');
+      error('when setting categ_flag==0, "categ" column must be already present in mutation_file.');
     end
     method = 1;
   elseif categ_flag==1
@@ -520,8 +547,10 @@ function MutSig_preprocess(mutation_file,coverage_file,covariate_file,output_fil
     M.triplet = upper(M.triplet);
     M = parse_in(M,'triplet','^.(.).$','triplet_middle');
     midx = find(~strcmp('-',M.ref_allele)&~strcmp('-',M.newbase));
-    if mean(strcmpi(M.ref_allele(midx),M.triplet_middle(midx)))<0.9
-      error('probably build mismatch with chr_files');
+    matchfrac = mean(strcmpi(M.ref_allele(midx),M.triplet_middle(midx)));
+    if matchfrac<0.9
+      adj = 'possible'; if matchfrac<0.7, adj = 'probable'; end
+      error('%s build mismatch between mutation_file and chr_files', adj);
     end
     M.yname = regexprep(M.triplet,'^(.)(.)(.)$','$2 in $1_$3');
     M.context65 = listmap(M.yname,Y.name);
@@ -657,7 +686,8 @@ function MutSig_runCV(mutation_file,coverage_file,covariate_file,output_file)
   % EFFECT
   if isfield(M,'effect') && (isfield(M,'is_coding') || isfield(M,'is_silent'))
     fprintf('NOTE:  Both "effect" and "is_coding"/"is_silent" are present in mutation_file.  Using "effect".\n');
-  elseif isfield(M,'effect')
+  end
+  if isfield(M,'effect')
     M.effect = regexprep(M.effect,'^flank.*','noncoding');
     if any(~ismember(unique(M.effect),{'noncoding','silent','nonsilent','null'}))
       error('in mutation_file, "effect" must be one of noncoding/silent/nonsilent/null');
@@ -680,19 +710,15 @@ function MutSig_runCV(mutation_file,coverage_file,covariate_file,output_file)
   end
   
   % CATEG
-  if isfield(M,'categ')
-    % OK
-  else
-    error('mutation_file lacks "categ" column.');
-  end
+  if ~isfield(M,'categ'), error('mutation_file lacks "categ" column.'); end
   
   % LOAD COVERAGE FILE and COVARIATE FILE
   fprintf('Loading coverage file...\n');
   C = load_struct_specify_string_cols(coverage_file,1:3); % gene effect categ are all strings
-  G=[]; G.gene = unique(C.gene);
+  G=[]; G.gene = unique(C.gene); ng=slength(G);
   fprintf('Loading covariate file...\n');
   V = load_struct_specify_string_cols(covariate_file,1);  % gene is string
-  f = fieldnames(V);
+  f = fieldnames(V); cvnames = f(2:end); nv = length(cvnames);
   gidx = listmap(G.gene,V.gene);
   for i=1:length(f)
     if strcmp(f{i},'gene'), continue; end
@@ -708,25 +734,27 @@ function MutSig_runCV(mutation_file,coverage_file,covariate_file,output_file)
     error('in coverage_file, "effect" must be one of noncoding/silent/nonsilent');
   end
   if ~isfield(C,'categ'), error('no "categ" column in coverage_file'); end
+  f = fieldnames(C); coverage_patient_names = f(4:end);
   
   % remove any genes that we don't have coverage for
   badgene = setdiff(M.gene,C.gene);
   if ~isempty(badgene)
-    fprintf('NOTE:  Found %d genes that lack coverage information.  Excluding them.\n',length(badgene));
+    fprintf('NOTE:  %d/%d gene names could not be mapped to coverage information.  Excluding them.\n',length(badgene),length(unique(M.gene)));
     M = reorder_struct_exclude(M,ismember(M.gene,badgene));
   end
-  
-  f = fieldnames(C); coverage_patient_names = f(4:end);
-  f = fieldnames(G); cvnames = f(2:end);
-  np = length(coverage_patient_names);
-  ng = slength(G);
-  nv = length(cvnames);
-  
+
   % make sure categories in C are same as in M
-  % get list of category names and change M.categ to be numeric
   bad = find(~ismember(M.categ,C.categ));
   if ~isempty(bad)
-    fprintf('NOTE:  Found %d mutations outside the category set.  Excluding them.\n',length(bad));
+    fprintf('NOTE:  %d/%d mutations were outside the category set.  Excluding them.\n',length(bad),slength(M));
+    if isfield(M,'ref_allele') && isfield(M,'newbase') && isfield(M,'type')
+      is_probably_indel = strcmp('-',M.ref_allele(bad)) | strcmp('-',M.newbase(bad));
+      is_probably_noncoding = grepmi('intron|utr|igr|flank',M.type(bad));
+      nbad2 = bad(is_probably_indel&is_probably_noncoding);
+      if nbad>0
+        fprintf('           (%d of them are noncoding indels.)\n',length(bad2));
+      end
+    end
     M = reorder_struct_exclude(M,bad);
   end
   if slength(M)==0, error('No mutations left!\n'); end
@@ -749,34 +777,33 @@ function MutSig_runCV(mutation_file,coverage_file,covariate_file,output_file)
   namebefore = M.patient;
   M.patient = regexprep(M.patient,'-','_');
   if any(~strcmp(namebefore,M.patient)), fprintf('NOTE:  Converting "-" to "_" in patient names.\n'); end
-  
-  % If generic coverage data given, expand it to one copy per sample
+
+  pat=[]; [pat.name tmp M.patient_idx] = unique(M.patient);
+  pat.cov_idx = listmap(pat.name,coverage_patient_names);
+  np = slength(pat);
+
+  % is generic coverage data given?
   generic_column_name = 'coverage';
-  if np>1
-    if any(strcmp(coverage_patient_names,generic_column_name)), error('reserved name "coverage" cannot appear in list of patient names'); end
-    if length(coverage_patient_names)~=np, error('patient names in coverage_file must be unique'); end
+  if length(coverage_patient_names)>1 || (length(coverage_patient_names)==1 && ~strcmpi(coverage_patient_names{1},generic_column_name))
+    if any(strcmp(coverage_patient_names,generic_column_name)), error('reserved name "%s" cannot appear in list of patient names',generic_column_name); end
+    if length(coverage_patient_names)~=length(unique(coverage_patient_names)), error('patient names in coverage_file must be unique'); end
+    % make sure all patients are accounted for in coverage file
+    if any(isnan(pat.cov_idx)), error('some patients in mutation_file are not accounted for in coverage_file'); end
+    generic_coverage_flag = false;
   else
-    if strcmp(coverage_patient_names{1},generic_column_name)
-      % we're using generic coverage
-      coverage_patient_names = unique(M.patient);
-      np = length(coverage_patient_names);
-      for i=1:np, C.(coverage_patient_names{i})=C.(generic_column_name); end
-      C = rmfield(C,generic_column_name);
-    end
+    % we're using generic coverage
+    pat.cov_idx(:) = 1;
+    generic_coverage_flag = true;
   end
   
-  M.patient_idx = listmap(M.patient,coverage_patient_names);
-  if any(isnan(M.patient_idx)), error('some patients in mutation_file are not accounted for in coverage_file'); end
-  
   % BUILD n and N tables
-  
   fprintf('Building n and N tables...\n');
   
-  midx = strcmp(M.effect,'silent');
+  midx = strcmpi(M.effect,'silent');
   n_silent = hist3d(M.gene_idx(midx),M.categ_idx(midx),M.patient_idx(midx),1,ng,1,ncat,1,np);
-  midx = strcmp(M.effect,'nonsilent') | strcmp(M.effect,'null');
+  midx = strcmpi(M.effect,'nonsilent') | strcmpi(M.effect,'null');
   n_nonsilent = hist3d(M.gene_idx(midx),M.categ_idx(midx),M.patient_idx(midx),1,ng,1,ncat,1,np);
-  midx = strcmp(M.effect,'noncoding');
+  midx = strcmpi(M.effect,'noncoding');
   n_noncoding = hist3d(M.gene_idx(midx),M.categ_idx(midx),M.patient_idx(midx),1,ng,1,ncat,1,np);
   
   N_silent = nan(ng,ncat,np);
@@ -784,23 +811,24 @@ function MutSig_runCV(mutation_file,coverage_file,covariate_file,output_file)
   N_noncoding = nan(ng,ncat,np);
   
   for ci=1:ncat
-    silent_idx = strcmp(C.effect,'silent') & C.categ_idx==ci;
-    nonsilent_idx = strcmp(C.effect,'nonsilent') & C.categ_idx==ci;
-    noncoding_idx = strcmp(C.effect,'noncoding') & C.categ_idx==ci;
+    silent_idx = strcmpi(C.effect,'silent') & C.categ_idx==ci;
+    nonsilent_idx = strcmpi(C.effect,'nonsilent') & C.categ_idx==ci;
+    noncoding_idx = strcmpi(C.effect,'noncoding') & C.categ_idx==ci;
     for pi=1:np
-      N_silent(:,ci,pi) = C.(coverage_patient_names{pi})(silent_idx);
-      N_nonsilent(:,ci,pi) = C.(coverage_patient_names{pi})(nonsilent_idx);
-      N_noncoding(:,ci,pi) = C.(coverage_patient_names{pi})(noncoding_idx);
+      cpfld = coverage_patient_names{pat.cov_idx(pi)};
+      N_silent(:,ci,pi) = C.(cpfld)(silent_idx);
+      N_nonsilent(:,ci,pi) = C.(cpfld)(nonsilent_idx);
+      N_noncoding(:,ci,pi) = C.(cpfld)(noncoding_idx);
     end
   end
   
   % SANITY CHECKS ON TOTALS
-  tot_n_nonsilent = sum(sum(sum(n_nonsilent,1),2),3);
-  tot_N_nonsilent = sum(sum(sum(N_nonsilent,1),2),3);
-  tot_n_silent = sum(sum(sum(n_silent,1),2),3);
-  tot_N_silent = sum(sum(sum(N_silent,1),2),3);
-  tot_n_noncoding = sum(sum(sum(n_noncoding,1),2),3);
-  tot_N_noncoding = sum(sum(sum(N_noncoding,1),2),3);
+  tot_n_nonsilent = fullsum(n_nonsilent);
+  tot_N_nonsilent = fullsum(N_nonsilent);
+  tot_n_silent = fullsum(n_silent);
+  tot_N_silent = fullsum(N_silent);
+  tot_n_noncoding = fullsum(n_noncoding);
+  tot_N_noncoding = fullsum(N_noncoding);
   tot_rate_nonsilent = tot_n_nonsilent/tot_N_nonsilent;
   tot_rate_silent = tot_n_silent/tot_N_silent;
   tot_rate_noncoding = tot_n_noncoding/tot_N_noncoding;
@@ -826,24 +854,24 @@ function MutSig_runCV(mutation_file,coverage_file,covariate_file,output_file)
   if abs_log2_difference_nonsilent_silent>max_abs_log2_difference_nonsilent_silent, error('silent and nonsilent rates are too different'); end
   
   % see if noncoding is OK: if not, give warning and zero it all out
+  ok = false;
   if tot_n_noncoding==0
     fprintf('NOTE:  no noncoding mutations.\n');
-    ok=false;
   else
-    ok=true;
     if tot_n_noncoding<min_tot_n_noncoding
-      fprintf('WARNING:  not enough noncoding mutations to analyze\n'); ok=false;
-    end
-    if tot_rate_noncoding<min_rate_noncoding || tot_rate_noncoding>max_rate_noncoding
-      fprintf('WARNING:  noncoding mutation rate out of range\n'); ok=false;
-    end
-    abs_log2_difference_noncoding_coding = abs(log2(tot_rate_noncoding/tot_rate_coding));
-    if abs_log2_difference_noncoding_coding>max_abs_log2_difference_noncoding_coding
-      fprintf('WARNING:  coding and noncoding rates are too different\n'); ok=false;
-    end
-  end
+      fprintf('WARNING:  not enough noncoding mutations to analyze\n');
+    else
+      if tot_rate_noncoding<min_rate_noncoding || tot_rate_noncoding>max_rate_noncoding
+        fprintf('WARNING:  noncoding mutation rate out of range\n');
+      else
+        abs_log2_difference_noncoding_coding = abs(log2(tot_rate_noncoding/tot_rate_coding));
+        if abs_log2_difference_noncoding_coding>max_abs_log2_difference_noncoding_coding
+          fprintf('WARNING:  coding and noncoding rates are too different\n');
+        else
+          ok = true;
+  end,end,end,end
   if ~ok
-    fprintf('          Zeroing out all noncoding mutations and coverage for the rest of the calculation.\n');
+    fprintf('Zeroing out all noncoding mutations and coverage for the rest of the calculation.\n');
     n_noncoding(:) = 0;
     N_noncoding(:) = 0;
   end
@@ -1107,7 +1135,6 @@ function MutSig_runCV(mutation_file,coverage_file,covariate_file,output_file)
   fprintf('Done.  Wrote results to %s\n',output_file);
   
 end
-
 % end of MutSig_runCV
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
