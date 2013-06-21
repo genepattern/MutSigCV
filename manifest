@@ -1,4 +1,4 @@
-#Wed, 12 Jun 2013 14:33:42 -0400
+#Fri, 21 Jun 2013 15:50:42 -0400
 #MutSigCV
 #Mon May 20 10:11:58 EDT 2013
 JVMLevel=
@@ -34,7 +34,7 @@ p2_type=java.io.File
 p2_value=
 p3_MODE=IN
 p3_TYPE=FILE
-p3_default_value=ftp://ftp.broadinstitute.org/pub/genepattern/example_files/MutSigCV_1.3/gene.covariates.txt
+p3_default_value=ftp\://ftp.broadinstitute.org/pub/genepattern/example_files/MutSigCV_1.3/gene.covariates.txt
 p3_description=File containing the covariates table.  The default selection is the covariates file used in the MutSigCV paper published in Nature (see the documentation for further information and a full reference). 
 p3_fileFormat=txt
 p3_name=covariates.table.file
@@ -65,13 +65,9 @@ p6_value=\=Skip category and effect discovery;<shared.data.home>/cga/annotation/
 pipelineModel=
 privacy=private
 quality=development
-requiredPatchLSIDs=urn\:lsid\:broad.mit.edu\:cancer.software.genepattern.server.patch\:GenePattern_3_4_2\:2,\
-   urn\:lsid\:broadinstitute.org\:plugin\:Ant_1.8\:1,\
-   urn\:lsid\:broadinstitute.org\:plugin\:Check_Python_2.6\:2
-requiredPatchURLs==http\://www.broadinstitute.org/webservices/gpModuleRepository/download/prod/patch/?file=/GenePattern_3_4_2/broad.mit.edu\:cancer.software.genepattern.server.patch/GenePattern_3_4_2/2/GenePattern_3_4_2.zip,\
-   http\://www.broadinstitute.org/webservices/gpModuleRepository/download/prod/patch/?file\=/Ant_1_8/broadinstitute.org\:plugin/Ant_1.8/1/Ant_1_8.zip,\
-   http\://www.broadinstitute.org/webservices/gpModuleRepository/download/prod/patch/?file\=/Check_Python_2.6/broadinstitute.org\:plugin/Check_Python_2.6/2/Check_Python_2_6.zip
+requiredPatchLSIDs=urn\:lsid\:broad.mit.edu\:cancer.software.genepattern.server.patch\:GenePattern_3_4_2\:2,urn\:lsid\:broadinstitute.org\:plugin\:Ant_1.8\:1,urn\:lsid\:broadinstitute.org\:plugin\:Check_Python_2.6\:2
+requiredPatchURLs=\=http\://www.broadinstitute.org/webservices/gpModuleRepository/download/prod/patch/?file\=/GenePattern_3_4_2/broad.mit.edu\:cancer.software.genepattern.server.patch/GenePattern_3_4_2/2/GenePattern_3_4_2.zip,http\://www.broadinstitute.org/webservices/gpModuleRepository/download/prod/patch/?file\=/Ant_1_8/broadinstitute.org\:plugin/Ant_1.8/1/Ant_1_8.zip,http\://www.broadinstitute.org/webservices/gpModuleRepository/download/prod/patch/?file\=/Check_Python_2.6/broadinstitute.org\:plugin/Check_Python_2.6/2/Check_Python_2_6.zip
 serializedModel=
 taskType=MutSig
 userid=eby
-version=Renaming executables to try to avoid the repository bug (module not available).
+version=Changing os property in manifest to "linux" (lower-case) as "Linux" causes issues with repo.
