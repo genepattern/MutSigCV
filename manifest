@@ -66,8 +66,8 @@ pipelineModel=
 privacy=private
 quality=development
 requiredPatchLSIDs=urn\:lsid\:broad.mit.edu\:cancer.software.genepattern.server.patch\:GenePattern_3_4_2\:2,urn\:lsid\:broadinstitute.org\:plugin\:Ant_1.8\:1,urn\:lsid\:broadinstitute.org\:plugin\:Check_Python_2.6\:2
-requiredPatchURLs=\=http\://www.broadinstitute.org/webservices/gpModuleRepository/download/prod/patch/?file\=/GenePattern_3_4_2/broad.mit.edu\:cancer.software.genepattern.server.patch/GenePattern_3_4_2/2/GenePattern_3_4_2.zip,http\://www.broadinstitute.org/webservices/gpModuleRepository/download/prod/patch/?file\=/Ant_1_8/broadinstitute.org\:plugin/Ant_1.8/1/Ant_1_8.zip,http\://www.broadinstitute.org/webservices/gpModuleRepository/download/prod/patch/?file\=/Check_Python_2.6/broadinstitute.org\:plugin/Check_Python_2.6/2/Check_Python_2_6.zip
+requiredPatchURLs=http\://www.broadinstitute.org/webservices/gpModuleRepository/download/prod/patch/?file\=/GenePattern_3_4_2/broad.mit.edu\:cancer.software.genepattern.server.patch/GenePattern_3_4_2/2/GenePattern_3_4_2.zip,http\://www.broadinstitute.org/webservices/gpModuleRepository/download/prod/patch/?file\=/Ant_1_8/broadinstitute.org\:plugin/Ant_1.8/1/Ant_1_8.zip,http\://www.broadinstitute.org/webservices/gpModuleRepository/download/prod/patch/?file\=/Check_Python_2.6/broadinstitute.org\:plugin/Check_Python_2.6/2/Check_Python_2_6.zip
 serializedModel=
 taskType=MutSig
 userid=eby
-version=Changing os property in manifest to "linux" (lower-case) as "Linux" causes issues with repo.
+version=Fixed a typo in the manifest's requiredPatchURLs property
