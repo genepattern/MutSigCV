@@ -1,0 +1,14 @@
+#lsid=urn:lsid:broad.mit.edu:cancer.software.genepattern.module.analysis:00320:999999999
+#
+module: MutSigCV
+params:
+       mutation.table.file: "LUSC.mutations_req_categ_discovery.maf"
+       coverage.table.file: "exome_full192.coverage.txt"
+       covariates.table.file: "gene.covariates.txt"
+       output.filename.base: "<mutation.table.file_basename>"
+       mutation.type.dictionary: "mutation_type_dictionary_file.txt"
+       genome.build: "<shared.data.home>/cga/annotation/ucsc/hg19"
+assertions:
+        files:
+            "LUSC.mutations_req_categ_discovery.sig_genes.txt":
+                diff: "/Volumes/xchip_sqa/Modules/TestSuiteData/MutSigCV/v1/output/valid_categ_discovery/LUSC.mutations_req_categ_discovery.sig_genes.txt"

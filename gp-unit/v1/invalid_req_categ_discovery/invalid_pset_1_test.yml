@@ -1,0 +1,17 @@
+#lsid=urn:lsid:broad.mit.edu:cancer.software.genepattern.module.analysis:00320:999999999
+#
+module: MutSigCV
+params:
+       mutation.table.file: "LUSC.mutations_req_categ_discovery.maf"
+       coverage.table.file: "exome_full192.coverage.txt"
+       covariates.table.file: "gene.covariates.txt"
+       output.filename.base: "<mutation.table.file_basename>"
+       mutation.type.dictionary: 
+       genome.build: 
+assertions:
+        jobStatus: fail
+        diffCmd: ./stdoutDiff.sh
+        files:
+            "stderr.txt":
+                diff: "/Volumes/xchip_sqa/Modules/TestSuiteData/MutSigCV/v1/output/invalid_req_categ_discovery_invalid_pset_1_test/stderr.txt"
+        
