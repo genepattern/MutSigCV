@@ -10,6 +10,6 @@ base2=`basename $2`
 
 diff -q tmpClean1/$base1 tmpClean2/$base2
 status=$?
-#rm -rf tmpClean1 tmpClean2
+rm -rf tmpClean1 tmpClean2
 
 exit $status
