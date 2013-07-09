@@ -1,0 +1,5 @@
+# Module-specific configuration properties.  Add these parameters to your server's 
+# YAML configuration file if appropriate.
+
+# Memory specification for LSF-backed servers 
+lsf.max.memory: 16
