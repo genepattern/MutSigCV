@@ -1,3 +1,5 @@
+#prerelease version number
+#Tue, 09 Jul 2013 14:05:02 -0400
 #updated after building 0.5
 #Wed, 26 Jun 2013 10:40:37 -0400
 #updated after building 0.4
@@ -9,4 +11,4 @@
 #updated after building 0.1
 #Wed, 12 Jun 2013 14:38:48 -0400
 #Fri Jun 22 11:26:14 EDT 2012
-prerelease.number=6
+prerelease.number=1
