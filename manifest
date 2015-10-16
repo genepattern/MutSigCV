@@ -3,7 +3,7 @@
 JVMLevel=
 LSID=urn\:lsid\:broad.mit.edu\:cancer.software.genepattern.module.analysis\:00320\:1.1
 author=Mike Lawrence, et al.;Broad Institute
-commandLine=<run-with-env> -u Matlab-2013a-MCR -u Python-2.6 python <libdir>run_matlab.py <libdir> gp_MutSigCV <mutation.table.file> <coverage.table.file> <covariates.table.file> <output.filename.base> <mutation.type.dictionary> <genome.build>
+commandLine=<run-with-env> -u Matlab-2013a -u Python-2.6 python <libdir>run_matlab.py <libdir> gp_MutSigCV <mutation.table.file> <coverage.table.file> <covariates.table.file> <output.filename.base> <mutation.type.dictionary> <genome.build>
 
 cpuType=any
 description=Identifies genes that are significantly mutated in cancer genomes, using a model with mutational covariates.
