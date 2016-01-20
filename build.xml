@@ -7,8 +7,7 @@
         <antcall target="prezip" />
         <zip destfile="${dest.dir}/${ant.project.name}.zip" whenempty="fail" defaultexcludes="true">
             <fileset dir="." includes="manifest, *.html, *.txt"/>
-            <fileset dir="src" includes="run_matlab.py" />
-            <fileset dir="executables" />
+            <zipfileset dir="executables" filemode="755" />
         </zip>
         <antcall target="postzip" />
     </target>
