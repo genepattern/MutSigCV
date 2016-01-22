@@ -63,7 +63,7 @@ p6_value=\=Skip category and effect discovery;<shared.data.home>/cga/annotation/
 pipelineModel=
 privacy=public
 publicationDate=07/09/2013 14\:11 
-quality=development
+quality=preproduction
 serializedModel=
 taskDoc=doc.html
 taskType=MutSig
