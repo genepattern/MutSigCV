@@ -1,3 +1,5 @@
+#  NOTE: the job will fail if the GpUnit test user has not accepted the license.
+#
 #lsid=urn:lsid:broad.mit.edu:cancer.software.genepattern.module.analysis:00320:999999999
 #
 module: MutSigCV
