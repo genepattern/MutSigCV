@@ -1,17 +1,21 @@
 #MutSigCV
 #Wed Jan 20 12:52:14 EST 2016
 JVMLevel=
-LSID=urn\:lsid\:broad.mit.edu\:cancer.software.genepattern.module.analysis\:00320\:1.2
+LSID=urn\:lsid\:broad.mit.edu\:cancer.software.genepattern.module.analysis\:00320\:1.3
 author=Mike Lawrence, et al.;Broad Institute
-commandLine=<run-with-env> -u Matlab-2013a-MCR <libdir>gp_MutSigCV <mutation.table.file> <coverage.table.file> <covariates.table.file> <output.filename.base> <mutation.type.dictionary> <genome.build>
+job.docker.image=genepattern/docker-mutsigcv:0.2
+# for local debugging, set job.docker.image=local/mutsigcv:0.4
+commandLine=gp_MutSigCV <mutation.table.file> <coverage.table.file> <covariates.table.file> <output.filename.base> <mutation.type.dictionary> <genome.build>
 cpuType=any
 description=Identifies genes that are significantly mutated in cancer genomes, using a model with mutational covariates.
 fileFormat=txt
+job.memory=16Gb
 language=MATLAB
 license=license.txt
 minGenePatternVersion=3.4.2
 name=MutSigCV
-os=linux
+# docker
+# os=linux
 p1_MODE=IN
 p1_TYPE=FILE
 p1_default_value=
@@ -67,6 +71,5 @@ quality=preproduction
 serializedModel=
 taskDoc=doc.html
 taskType=MutSig
-userid=pcarr
-job.memory=16Gb
-version=Remove python dependency, use 'Matlab-2013a-MCR' environment and directly invoke the gp_MutSigCV executable
+userid=pcarr@broadinstitute.org
+version=Moved gp_MutSigCV executable into the 'genepattern/docker-mutsigcv:0.2' docker image
