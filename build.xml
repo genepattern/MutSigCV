@@ -7,7 +7,6 @@
         <antcall target="prezip" />
         <zip destfile="${dest.dir}/${ant.project.name}.zip" whenempty="fail" defaultexcludes="true">
             <fileset dir="." includes="manifest, *.html, *.txt"/>
-            <zipfileset dir="executables" filemode="755" />
         </zip>
         <antcall target="postzip" />
     </target>
