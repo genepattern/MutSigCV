@@ -1,0 +1,23 @@
+#
+# Example test based on ../v1/standard_input_from_paper/valid_pset_1_test.yml
+#
+# Notes:
+# * This test will fail if the GpUnit test user has not accepted the license.
+# * This test passed in about 20 minutes on a MacBook Pro with 8 Gb of RAM.
+# * It failed with exit code 137 (out of memory) when run with 4 Gb of RAM.
+#
+
+module: MutSigCV
+params:
+    mutation.table.file: "ftp://ftp.broadinstitute.org/pub/genepattern/example_files/MutSigCV_1.3/LUSC.mutations.maf"
+    coverage.table.file: "ftp://ftp.broadinstitute.org/pub/genepattern/example_files/MutSigCV_1.3/LUSC.coverage.txt"
+    covariates.table.file: "ftp://ftp.broadinstitute.org/pub/genepattern/example_files/MutSigCV_1.3/gene.covariates.txt"
+       
+    # job failed with exit code 137 (out of memory) with 4 Gb of RAM
+    job.memory: "8 Gb"
+
+assertions:
+    files:
+        # copied from /xchip_sqa/Modules/TestSuiteData/MutSigCV/v1/output/standard_input_from_paper/LUSC.mutations.sig_genes.txt
+        "LUSC.mutations.sig_genes.txt":
+            diff: "output/LUSC.mutations.sig_genes.txt"
