@@ -1,2 +1,5 @@
 .DS_Store
 *~
+
+# ignore the 'build' directory
+build/
