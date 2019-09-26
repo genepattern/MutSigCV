@@ -4,7 +4,7 @@
 JVMLevel=
 LSID=urn:lsid:broad.mit.edu:cancer.software.genepattern.module.analysis:00320:1.3.5
 author=Mike Lawrence, et al.;Broad Institute
-job.docker.image=genepattern/mutsigcv:v1.3.5-pre.2
+job.docker.image=genepattern/mutsigcv:0.2
 # for local debugging, set job.docker.image=genepattern/mutsigcv:v1.3.5-pre.2
 commandLine=gp_MutSigCV <mutation.table.file> <coverage.table.file> <covariates.table.file> <output.filename.base> <mutation.type.dictionary> <genome.build>
 cpuType=any
@@ -73,4 +73,4 @@ serializedModel=
 taskDoc=doc.html
 taskType=Mutational Significance Analysis
 userid=pcarr@broadinstitute.org
-version=Moved gp_MutSigCV executable into the 'genepattern/docker-mutsigcv\:0.2' docker image
+version=taskType
